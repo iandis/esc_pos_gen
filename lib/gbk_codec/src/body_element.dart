@@ -1,14 +1,15 @@
 //Load standard raw data from html source
 
-import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart' as dom;
+import 'package:html/parser.dart' show parse;
 
 Future<dom.Element?> pageBody() async {
-  var document = parse(htmlStr);
+  final dom.Document document = parse(htmlStr);
   return document.querySelector('body');
 }
 
-String htmlStr = '''<!DOCTYPE HTML>
+// ignore: leading_newlines_in_multiline_strings
+const String htmlStr = '''<!DOCTYPE HTML>
     <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">

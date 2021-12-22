@@ -1,11 +1,3 @@
-/*
- * esc_pos_utils
- * Created by Andrey U.
- * 
- * Copyright (c) 2019-2020. All rights reserved.
- * See LICENSE for distribution and usage details.
- */
-
 import 'enums.dart';
 
 /// Text styles
@@ -24,15 +16,15 @@ class PosStyles {
 
   // Init all fields with default values
   const PosStyles.defaults({
-    this.bold: false,
-    this.reverse: false,
-    this.underline: false,
-    this.turn90: false,
-    this.align: PosAlign.left,
-    this.height: PosTextSize.size1,
-    this.width: PosTextSize.size1,
-    this.fontType: PosFontType.fontA,
-    this.codeTable: "CP437",
+    this.bold = false,
+    this.reverse = false,
+    this.underline = false,
+    this.turn90 = false,
+    this.align = PosAlign.left,
+    this.height = PosTextSize.size1,
+    this.width = PosTextSize.size1,
+    this.fontType = PosFontType.fontA,
+    this.codeTable = 'CP437',
   });
 
   final bool bold;

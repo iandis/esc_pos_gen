@@ -1,11 +1,3 @@
-/*
- * esc_pos_utils
- * Created by Andrey U.
- * 
- * Copyright (c) 2019-2020. All rights reserved.
- * See LICENSE for distribution and usage details.
- */
-
 import 'dart:typed_data' show Uint8List;
 
 import 'pos_styles.dart';
@@ -23,18 +15,16 @@ class PosColumn {
     if (width < 1 || width > 12) {
       throw Exception('Column width must be between 1..12');
     }
-    if (text != null &&
-        text.length > 0 &&
-        textEncoded != null &&
-        textEncoded!.length > 0) {
+    if (text.isNotEmpty && textEncoded != null && textEncoded!.isNotEmpty) {
       throw Exception(
-          'Only one parameter - text or textEncoded - should be passed');
+        'Only one parameter - text or textEncoded - should be passed',
+      );
     }
   }
 
-  String text;
-  Uint8List? textEncoded;
-  bool containsChinese;
-  int width;
-  PosStyles styles;
+  final String text;
+  final Uint8List? textEncoded;
+  final bool containsChinese;
+  final int width;
+  final PosStyles styles;
 }

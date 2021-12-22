@@ -1,6 +1,5 @@
+import 'package:esc_pos_gen/esc_pos_gen.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:esc_pos_utils_plus/esc_pos_utils.dart';
 
 void main() {
   test('is capabilities.isEmpty is completed', () {
@@ -10,7 +9,8 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
     await CapabilityProfile.ensureProfileLoaded();
     CapabilityProfile.load();
-    print("capabilities.length ${printCapabilities.length}");
+    // ignore: avoid_print
+    print('capabilities.length ${printCapabilities.length}');
     expect(printCapabilities.isNotEmpty, true);
   });
 }
