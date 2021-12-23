@@ -31,7 +31,7 @@ class CapabilityProfile {
     /// else do nothing
     if (printCapabilities.isEmpty) {
       final String content = await rootBundle.loadString(
-        path ?? 'lib/resources/capabilities.json',
+        path ?? 'package/esc_pos_gen/resources/capabilities.json',
       );
       final Map<String, dynamic> _capabilities =
           json.decode(content) as Map<String, dynamic>;
