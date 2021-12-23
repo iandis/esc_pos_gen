@@ -11,28 +11,28 @@ class BarcodeType {
   final int value;
 
   /// UPC-A
-  static const upcA = BarcodeType._internal(0);
+  static const BarcodeType upcA = BarcodeType._internal(0);
 
   /// UPC-E
-  static const upcE = BarcodeType._internal(1);
+  static const BarcodeType upcE = BarcodeType._internal(1);
 
   /// JAN13 (EAN13)
-  static const ean13 = BarcodeType._internal(2);
+  static const BarcodeType ean13 = BarcodeType._internal(2);
 
   /// JAN8 (EAN8)
-  static const ean8 = BarcodeType._internal(3);
+  static const BarcodeType ean8 = BarcodeType._internal(3);
 
   /// CODE39
-  static const code39 = BarcodeType._internal(4);
+  static const BarcodeType code39 = BarcodeType._internal(4);
 
   /// ITF (Interleaved 2 of 5)
-  static const itf = BarcodeType._internal(5);
+  static const BarcodeType itf = BarcodeType._internal(5);
 
   /// CODABAR (NW-7)
-  static const codabar = BarcodeType._internal(6);
+  static const BarcodeType codabar = BarcodeType._internal(6);
 
   /// CODE128
-  static const code128 = BarcodeType._internal(73);
+  static const BarcodeType code128 = BarcodeType._internal(73);
 }
 
 class BarcodeText {
@@ -40,29 +40,29 @@ class BarcodeText {
   final int value;
 
   /// Not printed
-  static const none = BarcodeText._internal(0);
+  static const BarcodeText none = BarcodeText._internal(0);
 
   /// Above the barcode
-  static const above = BarcodeText._internal(1);
+  static const BarcodeText above = BarcodeText._internal(1);
 
   /// Below the barcode
-  static const below = BarcodeText._internal(2);
+  static const BarcodeText below = BarcodeText._internal(2);
 
   /// Both above and below the barcode
-  static const both = BarcodeText._internal(3);
+  static const BarcodeText both = BarcodeText._internal(3);
 }
 
 class BarcodeFont {
   const BarcodeFont._internal(this.value);
   final int value;
 
-  static const fontA = BarcodeFont._internal(0);
-  static const fontB = BarcodeFont._internal(1);
-  static const fontC = BarcodeFont._internal(2);
-  static const fontD = BarcodeFont._internal(3);
-  static const fontE = BarcodeFont._internal(4);
-  static const specialA = BarcodeFont._internal(97);
-  static const specialB = BarcodeFont._internal(98);
+  static const BarcodeFont fontA = BarcodeFont._internal(0);
+  static const BarcodeFont fontB = BarcodeFont._internal(1);
+  static const BarcodeFont fontC = BarcodeFont._internal(2);
+  static const BarcodeFont fontD = BarcodeFont._internal(3);
+  static const BarcodeFont fontE = BarcodeFont._internal(4);
+  static const BarcodeFont specialA = BarcodeFont._internal(97);
+  static const BarcodeFont specialB = BarcodeFont._internal(98);
 }
 
 class Barcode {
@@ -71,12 +71,12 @@ class Barcode {
   /// k = 11, 12
   /// d = '0' – '9'
   Barcode.upcA(List<dynamic> barcodeData) {
-    final k = barcodeData.length;
-    if (![11, 12].contains(k)) {
+    final int k = barcodeData.length;
+    if (!const <int>[11, 12].contains(k)) {
       throw Exception('Barcode: Wrong data range');
     }
 
-    final numeric = RegExp(r'^[0-9]$');
+    final RegExp numeric = RegExp(r'^[0-9]$');
     final bool isDataValid =
         barcodeData.every((dynamic d) => numeric.hasMatch(d.toString()));
     if (!isDataValid) {
@@ -92,16 +92,17 @@ class Barcode {
   /// k = 6 – 8, 11, 12
   /// d = '0' – '9' (However, d0 = '0' when k = 7, 8, 11, 12)
   Barcode.upcE(List<dynamic> barcodeData) {
-    final k = barcodeData.length;
-    if (![6, 7, 8, 11, 12].contains(k)) {
+    final int k = barcodeData.length;
+    if (!const <int>[6, 7, 8, 11, 12].contains(k)) {
       throw Exception('Barcode: Wrong data range');
     }
 
-    if ([7, 8, 11, 12].contains(k) && barcodeData[0].toString() != '0') {
+    if (const <int>[7, 8, 11, 12].contains(k) &&
+        barcodeData[0].toString() != '0') {
       throw Exception('Barcode: Data is not valid');
     }
 
-    final numeric = RegExp(r'^[0-9]$');
+    final RegExp numeric = RegExp(r'^[0-9]$');
     final bool isDataValid =
         barcodeData.every((dynamic d) => numeric.hasMatch(d.toString()));
     if (!isDataValid) {
@@ -117,12 +118,12 @@ class Barcode {
   /// k = 12, 13
   /// d = '0' – '9'
   Barcode.ean13(List<dynamic> barcodeData) {
-    final k = barcodeData.length;
-    if (![12, 13].contains(k)) {
+    final int k = barcodeData.length;
+    if (!const <int>[12, 13].contains(k)) {
       throw Exception('Barcode: Wrong data range');
     }
 
-    final numeric = RegExp(r'^[0-9]$');
+    final RegExp numeric = RegExp(r'^[0-9]$');
     final bool isDataValid =
         barcodeData.every((dynamic d) => numeric.hasMatch(d.toString()));
     if (!isDataValid) {
@@ -138,12 +139,12 @@ class Barcode {
   /// k = 7, 8
   /// d = '0' – '9'
   Barcode.ean8(List<dynamic> barcodeData) {
-    final k = barcodeData.length;
-    if (![7, 8].contains(k)) {
+    final int k = barcodeData.length;
+    if (!const <int>[7, 8].contains(k)) {
       throw Exception('Barcode: Wrong data range');
     }
 
-    final numeric = RegExp(r'^[0-9]$');
+    final RegExp numeric = RegExp(r'^[0-9]$');
     final bool isDataValid =
         barcodeData.every((dynamic d) => numeric.hasMatch(d.toString()));
     if (!isDataValid) {
@@ -159,12 +160,12 @@ class Barcode {
   /// k >= 1
   /// d: '0'–'9', A–Z, SP, $, %, *, +, -, ., /
   Barcode.code39(List<dynamic> barcodeData) {
-    final k = barcodeData.length;
+    final int k = barcodeData.length;
     if (k < 1) {
       throw Exception('Barcode: Wrong data range');
     }
 
-    final regex = RegExp(r'^[0-9A-Z \$\%\*\+\-\.\/]$');
+    final RegExp regex = RegExp(r'^[0-9A-Z \$\%\*\+\-\.\/]$');
     final bool isDataValid =
         barcodeData.every((dynamic d) => regex.hasMatch(d.toString()));
     if (!isDataValid) {
@@ -180,12 +181,12 @@ class Barcode {
   /// k >= 2 (even number)
   /// d = '0'–'9'
   Barcode.itf(List<dynamic> barcodeData) {
-    final k = barcodeData.length;
+    final int k = barcodeData.length;
     if (k < 2 || !k.isEven) {
       throw Exception('Barcode: Wrong data range');
     }
 
-    final numeric = RegExp(r'^[0-9]$');
+    final RegExp numeric = RegExp(r'^[0-9]$');
     final bool isDataValid =
         barcodeData.every((dynamic d) => numeric.hasMatch(d.toString()));
     if (!isDataValid) {
@@ -203,12 +204,12 @@ class Barcode {
   /// However, d0 = A–D, dk = A–D (65-68)
   /// d0 = a-d, dk = a-d (97-100)
   Barcode.codabar(List<dynamic> barcodeData) {
-    final k = barcodeData.length;
+    final int k = barcodeData.length;
     if (k < 2) {
       throw Exception('Barcode: Wrong data range');
     }
 
-    final regex = RegExp(r'^[0-9A-Da-d\$\+\-\.\/\:]$');
+    final RegExp regex = RegExp(r'^[0-9A-Da-d\$\+\-\.\/\:]$');
     final bool isDataValid =
         barcodeData.every((dynamic d) => regex.hasMatch(d.toString()));
     if (!isDataValid) {
@@ -241,12 +242,12 @@ class Barcode {
   /// {C = QRCode type C
   /// barcodeData ex.: "{A978020137962".split("");
   Barcode.code128(List<dynamic> barcodeData) {
-    final k = barcodeData.length;
+    final int k = barcodeData.length;
     if (k < 2) {
       throw Exception('Barcode: Wrong data range');
     }
 
-    final regex = RegExp(r'^\{[A-C][\x00-\x7F]+$');
+    final RegExp regex = RegExp(r'^\{[A-C][\x00-\x7F]+$');
     final bool isDataValid = regex.hasMatch(barcodeData.join());
 
     if (!isDataValid) {
@@ -257,14 +258,14 @@ class Barcode {
     _data = _convertData(barcodeData);
   }
 
-  BarcodeType _type;
-  List<int> _data;
+  BarcodeType? _type;
+  List<int>? _data;
 
   List<int> _convertData(List<dynamic> list) =>
       list.map((dynamic d) => d.toString().codeUnitAt(0)).toList();
 
   int _charcode(dynamic ch) => ch.toString().codeUnitAt(0);
 
-  BarcodeType get type => _type;
-  List<int> get data => _data;
+  BarcodeType? get type => _type;
+  List<int>? get data => _data;
 }

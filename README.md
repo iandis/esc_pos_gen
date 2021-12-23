@@ -1,19 +1,20 @@
-# esc_pos_utils
+# esc_pos_gen
 
-[![Pub Version](https://img.shields.io/pub/v/esc_pos_utils)](https://pub.dev/packages/esc_pos_utils)
+[![style: lint](https://img.shields.io/badge/style-lint-4BC0F5.svg)](https://pub.dev/packages/lint)
 
-Base Flutter/Dart classes for ESC/POS printing. `Generator` class generates ESC/POS commands that can be sent to a thermal printer.
+Declarative-style ESC/POS commands for printing.
 
-This is the "base" library that used for:
+`Generator` class generates printing properties such as
+`CapabilityProfile`, `PaperSize`, etc.
 
-- Flutter WiFi/Ethernet printing: [esc_pos_printer](https://github.com/andrey-ushakov/esc_pos_printer)
-- Flutter Bluetooth printing: [esc_pos_bluetooth](https://github.com/andrey-ushakov/esc_pos_bluetooth)
+`PosComponent` classes generates bytes for printing ESC/POS commands.
 
-## Main Features
+Combine both to create a `Paper` object that can generate all commands from `PosComponent`s to bytes.
 
-- Connect to Wi-Fi / Ethernet printers
-- Simple text printing using _text_ method
-- Tables printing using _row_ method
+## Features
+
+- 📝 Declarative-style (just like creating widgets)
+- Tables printing using `PosRow`
 - Text styling:
   - size, align, bold, reverse, underline, different fonts, turn 90°
 - Print images
@@ -25,66 +26,83 @@ This is the "base" library that used for:
 
 **Note**: Your printer may not support some of the presented features (some styles, partial/full paper cutting, reverse feed, barcodes...).
 
-## Generate a Ticket
+## Generate a Paper
 
-### Simple ticket with styles:
+### Simple paper with styles:
 
 ```dart
-List<int> testTicket() {
-  final List<int> bytes = [];
-  // Using default profile
-  final profile = await CapabilityProfile.load();
-  final generator = Generator(PaperSize.mm80, profile);
-  List<int> bytes = [];
+List<int> generatePaper() {
+  final CapabilityProfile profile = await CapabilityProfile.load();
+  final Generator generator = Generator(
+    PaperSize.mm58,
+    profile,
+  );
 
-  bytes += generator.text(
-      'Regular: aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ');
-  bytes += generator.text('Special 1: àÀ èÈ éÉ ûÛ üÜ çÇ ôÔ',
-      styles: PosStyles(codeTable: PosCodeTable.westEur));
-  bytes += generator.text('Special 2: blåbærgrød',
-      styles: PosStyles(codeTable: PosCodeTable.westEur));
-
-  bytes += generator.text('Bold text', styles: PosStyles(bold: true));
-  bytes += generator.text('Reverse text', styles: PosStyles(reverse: true));
-  bytes += generator.text('Underlined text',
-      styles: PosStyles(underline: true), linesAfter: 1);
-  bytes += generator.text('Align left', styles: PosStyles(align: PosAlign.left));
-  bytes += generator.text('Align center', styles: PosStyles(align: PosAlign.center));
-  bytes += generator.text('Align right',
-      styles: PosStyles(align: PosAlign.right), linesAfter: 1);
-
-  bytes += generator.text('Text size 200%',
+  final List<PosComponent> components = <PosComponent>[
+    const PosText(
+      'Bold Title',
       styles: PosStyles(
-        height: PosTextSize.size2,
-        width: PosTextSize.size2,
-      ));
+        bold: true,
+        align: PosAlign.center,
+      ),
+    ),
+    const PosText.right('Right Text'),
+    const PosSeparator(),
+    PosRow.leftRightText(
+      leftText: 'Left Text',
+      rightText: 'Right Text',
+    ),
+    for (int i = 1; i <= 10; i++)
+      PosRow.leftRightText(
+        leftText: 'Item $i',
+        rightText: 'US\$ ${i * 10}',
+      ),
+    const PosSeparator(),
+    const PosQRCode('QRCode#1'),
+    const PosText('QR-Code'),
+    const PosSeparator(),
+    const PosFeed(1),
+    const PosCut(),
+  ];
 
-  bytes += generator.feed(2);
-  bytes += generator.cut();
-  return bytes;
+  final Paper paper = Paper(
+    generator: generator,
+    components: components,
+  );
+
+  return paper.bytes;
 }
 ```
 
 ### Print a table row:
 
 ```dart
-generator.row([
+PosRow([
     PosColumn(
       text: 'col3',
       width: 3,
-      styles: PosStyles(align: PosAlign.center, underline: true),
+      styles: PosStyles(
+        align: PosAlign.center,
+        underline: true,
+      ),
     ),
     PosColumn(
       text: 'col6',
       width: 6,
-      styles: PosStyles(align: PosAlign.center, underline: true),
+      styles: PosStyles(
+        align: PosAlign.center,
+        underline: true,
+      ),
     ),
     PosColumn(
       text: 'col3',
       width: 3,
-      styles: PosStyles(align: PosAlign.center, underline: true),
+      styles: PosStyles(
+        align: PosAlign.center,
+        underline: true,
+      ),
     ),
-  ]);
+]);
 ```
 
 ### Print an image:
@@ -99,24 +117,31 @@ Note that your printer may support only some of the above functions.
 
 ```dart
 import 'dart:io';
+
+import 'package:esc_pos_gen/esc_pos_gen.dart';
 import 'package:image/image.dart';
 
 final ByteData data = await rootBundle.load('assets/logo.png');
 final Uint8List bytes = data.buffer.asUint8List();
 final Image image = decodeImage(bytes);
 // Using `ESC *`
-generator.image(image);
+PosImage(image: image);
 // Using `GS v 0` (obsolete)
-generator.imageRaster(image);
+PosImage.raster(image: image);
 // Using `GS ( L`
-generator.imageRaster(image, imageFn: PosImageFn.graphics);
+PosImage.raster(
+  image: image,
+  imageFn: PosImageFn.graphics,
+);
 ```
 
 ### Print a Barcode:
 
 ```dart
 final List<int> barData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 4];
-generator.barcode(Barcode.upcA(barData));
+PosBarcode(Barcode.upcA(barData));
+// or
+// PosBarcode.upcA(barData);
 ```
 
 ### Print a QR Code:
@@ -124,7 +149,7 @@ generator.barcode(Barcode.upcA(barData));
 Using native ESC/POS commands:
 
 ```dart
-generator.qrcode('example.com');
+PosQRCode('example.com');
 ```
 
 To print a QR Code as an image (if your printer doesn't support native commands), add [qr_flutter](https://pub.dev/packages/qr_flutter) and [path_provider](https://pub.dev/packages/path_provider) as a dependency in your `pubspec.yaml` file.
@@ -144,7 +169,7 @@ try {
   final imgFile = await qrFile.writeAsBytes(uiImg.buffer.asUint8List());
   final img = decodeImage(imgFile.readAsBytesSync());
 
-  generator.image(img);
+  return PosImage(image: img);
 } catch (e) {
   print(e);
 }
@@ -169,7 +194,7 @@ final profiles = await CapabilityProfile.getAvailableProfiles();
 
 ## How to Help
 
-- Add a CapabilityProfile to support your printer's model. A new profile should be added to `lib/resources/capabilities.json` file
+- Add a CapabilityProfile to support your printer's model. A new profile should be added to `resources/capabilities.json` file
 - Test your printer and add it in the table: [Wifi/Network printer](https://github.com/andrey-ushakov/esc_pos_printer/blob/master/printers.md) or [Bluetooth printer](https://github.com/andrey-ushakov/esc_pos_bluetooth/blob/master/printers.md)
 - Test and report bugs
 - Share your ideas about what could be improved (code optimization, new features...)

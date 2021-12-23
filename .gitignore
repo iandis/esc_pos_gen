@@ -24,11 +24,15 @@
 **/doc/api/
 .dart_tool/
 .flutter-plugins
+.flutter-plugins
 .flutter-plugins-dependencies
 .packages
+
 .pub-cache/
 .pub/
 build/
+local_example/
+local/
 
 # Android related
 **/android/**/gradle-wrapper.jar
