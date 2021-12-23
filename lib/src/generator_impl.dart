@@ -10,32 +10,32 @@ class _GeneratorImpl implements Generator {
   /// Ticket config
   @override
   final PaperSize paperSize;
-  
+
   @override
   final int spaceBetweenRows;
-  
+
   @override
   final CapabilityProfile profile;
 
   int? _maxCharsPerLine;
-  
+
   @override
   int? get maxCharsPerLine => _maxCharsPerLine;
 
   /// Global styles
   String? _codeTable;
-  
+
   @override
   String? get codeTable => _codeTable;
 
   PosFontType? _font;
-  
+
   @override
   PosFontType? get font => _font;
 
   /// Current styles
   PosStyles _styles = const PosStyles();
-  
+
   @override
   PosStyles get styles => _styles;
 

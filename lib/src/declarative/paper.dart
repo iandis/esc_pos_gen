@@ -12,7 +12,7 @@ abstract class Paper {
   }) = _Paper;
 
   /// Returns bytes of generated ESC/POS commands
-  /// 
+  ///
   /// `Read-only`
   List<int> get bytes;
 }

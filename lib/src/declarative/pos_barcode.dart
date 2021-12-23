@@ -9,16 +9,16 @@ part 'pos_barcode_impl.dart';
 
 abstract class PosBarcode implements PosComponent {
   /// Creates ESC/POS commands for printing a barcode
-  /// 
+  ///
   /// * [width] range and units are different depending on the printer model
   /// (some printers use 1..5)
-  /// 
+  ///
   /// * [height] range: 1 - 255. The units depend on the printer model.
   /// Width, height, font, text position settings are effective until
   /// performing of ESC @, reset or power-off
-  /// 
+  ///
   /// * [textPosition] defaults to [BarcodeText.below]
-  /// 
+  ///
   /// * [align] defaults to [PosAlign.center]
   const factory PosBarcode(
     Barcode barcode, {
