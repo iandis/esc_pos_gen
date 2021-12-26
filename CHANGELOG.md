@@ -1,3 +1,9 @@
+## 3.1.0
+
+- add new `PosListComponent`
+- fix bug on `CapabilityProfile` where path to `capabilities.json` was "wrong"
+- move `gbk_codec` to `src` folder
+
 ## 3.0.0
 
 - add declarative-style classes
