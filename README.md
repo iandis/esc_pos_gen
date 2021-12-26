@@ -1,6 +1,6 @@
 # esc_pos_gen
 
-[![style: lint](https://img.shields.io/badge/style-lint-4BC0F5.svg)](https://pub.dev/packages/lint)
+[![Pub Version](https://img.shields.io/pub/v/esc_pos_gen)](https://pub.dev/packages/esc_pos_gen) [![style: lint](https://img.shields.io/badge/style-lint-4BC0F5.svg)](https://pub.dev/packages/lint)
 
 Declarative-style ESC/POS commands for printing.
 
@@ -14,15 +14,15 @@ Combine both to create a `Paper` object that can generate all commands from `Pos
 ## Features
 
 - 📝 Declarative-style (just like creating widgets)
-- Tables printing using `PosRow`
-- Text styling:
+- 📰 Tables printing using `PosRow`
+- 😎 Text styling:
   - size, align, bold, reverse, underline, different fonts, turn 90°
-- Print images
-- Print barcodes
+- 📸 Print images
+- 🔠 Print barcodes
   - UPC-A, UPC-E, JAN13 (EAN13), JAN8 (EAN8), CODE39, ITF (Interleaved 2 of 5), CODABAR (NW-7), CODE128
-- Paper cut (partial, full)
-- Beeping (with different duration)
-- Paper feed, reverse feed
+- ✂️ Paper cut (partial, full)
+- 🚗 Beeping (with different duration)
+- 📃 Paper feed, reverse feed
 
 **Note**: Your printer may not support some of the presented features (some styles, partial/full paper cutting, reverse feed, barcodes...).
 
@@ -39,27 +39,34 @@ List<int> generatePaper() {
   );
 
   final List<PosComponent> components = <PosComponent>[
-    const PosText(
-      'Bold Title',
-      styles: PosStyles(
-        bold: true,
-        align: PosAlign.center,
-      ),
-    ),
-    const PosText.right('Right Text'),
+    const PosText.center('My Store'),
     const PosSeparator(),
-    PosRow.leftRightText(
-      leftText: 'Left Text',
-      rightText: 'Right Text',
+    PosListComponent.builder(
+      count: 20,
+      builder: (int i) {
+        return PosListComponent(
+          <PosComponent>[
+            PosRow.leftRightText(
+              leftText: 'Product $i',
+              rightText: 'US\$ $i',
+            ),
+            PosRow.leftRightText(
+              leftText: '1 x US\$ $i',
+              leftTextStyles: const PosStyles.defaults(
+                fontType: PosFontType.fontB,
+              ),
+              rightText: 'US\$ $i',
+              rightTextStyles: const PosStyles.defaults(
+                align: PosAlign.right,
+                fontType: PosFontType.fontB,
+              ),
+            ),
+          ],
+        );
+      },
     ),
-    for (int i = 1; i <= 10; i++)
-      PosRow.leftRightText(
-        leftText: 'Item $i',
-        rightText: 'US\$ ${i * 10}',
-      ),
     const PosSeparator(),
-    const PosQRCode('QRCode#1'),
-    const PosText('QR-Code'),
+    PosBarcode.code128('{A12345'.split('')),
     const PosSeparator(),
     const PosFeed(1),
     const PosCut(),
@@ -198,3 +205,8 @@ final profiles = await CapabilityProfile.getAvailableProfiles();
 - Test your printer and add it in the table: [Wifi/Network printer](https://github.com/andrey-ushakov/esc_pos_printer/blob/master/printers.md) or [Bluetooth printer](https://github.com/andrey-ushakov/esc_pos_bluetooth/blob/master/printers.md)
 - Test and report bugs
 - Share your ideas about what could be improved (code optimization, new features...)
+
+## Thanks to
+
+- [esc_pos_utils](https://github.com/andrey-ushakov/esc_pos_utils)
+- [esc_pos_utils_plus](https://github.com/kechankrisna/esc_pos_utils)
