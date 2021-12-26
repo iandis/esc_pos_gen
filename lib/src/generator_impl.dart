@@ -41,112 +41,59 @@ class _GeneratorImpl implements Generator {
 
   /// Clear the buffer and reset text styles
   @override
-  List<int> getInitialStyles() {
+  List<int> reset() {
     final List<int> bytes = <int>[];
     bytes.addAll(cInit.codeUnits);
-    bytes.addAll(getGlobalCodeTable(_codeTable).bytes);
-    bytes.addAll(getGlobalFont(_font).bytes);
-    return bytes;
-  }
-
-  @override
-  void reset() {
     _styles = const PosStyles();
-    setGlobalCodeTable(_codeTable);
-    setGlobalFont(_font);
+    bytes.addAll(setGlobalCodeTable(_codeTable));
+    bytes.addAll(setGlobalFont(_font));
+    return bytes;
   }
 
   /// Set global code table which will be used
   /// instead of the default printer's code table
   /// (even after resetting)
   @override
-  Result getGlobalCodeTable(String? codeTable) {
+  List<int> setGlobalCodeTable(String? codeTable) {
     final List<int> bytes = <int>[];
-    final String? _codeTable = codeTable;
-    final PosStyles _styles = this._styles;
-    Result result = Result(
-      styles: _styles,
-      bytes: bytes,
-    );
-
-    if (_codeTable != null) {
+    _codeTable = codeTable;
+    if (codeTable != null) {
       bytes.addAll(
         Uint8List.fromList(
           List<int>.from(cCodeTable.codeUnits)
             ..add(
-              profile.getCodePageId(_codeTable),
+              profile.getCodePageId(codeTable),
             ),
         ),
       );
-      result = result.copyWith(
-        styles: _styles.copyWith(
-          codeTable: _codeTable,
-        ),
-      );
-    }
-    return result;
-  }
-
-  /// Set global code table which will be used
-  /// instead of the default printer's code table
-  /// (even after resetting)
-  @override
-  void setGlobalCodeTable(String? codeTable) {
-    _codeTable = codeTable;
-    if (codeTable != null) {
       _styles = _styles.copyWith(codeTable: codeTable);
     }
+    return bytes;
   }
 
   /// Set global font which will be used instead of the default printer's font
   /// (even after resetting)
   @override
-  Result getGlobalFont(PosFontType? font, {int? maxCharsPerLine}) {
+  List<int> setGlobalFont(PosFontType? font, {int? maxCharsPerLine}) {
     final List<int> bytes = <int>[];
-    final PosStyles _styles = this._styles;
-    Result result = Result(
-      styles: _styles,
-      bytes: bytes,
-    );
-
-    if (font != null) {
-      bytes.addAll(
-        font == PosFontType.fontB ? cFontB.codeUnits : cFontA.codeUnits,
-      );
-      result = result.copyWith(
-        styles: _styles.copyWith(
-          fontType: font,
-        ),
-      );
-    }
-    return result;
-  }
-
-  /// Set global font which will be used instead of the default printer's font
-  /// (even after resetting)
-  @override
-  void setGlobalFont(PosFontType? font, {int? maxCharsPerLine}) {
     _font = font;
     if (font != null) {
       _maxCharsPerLine = maxCharsPerLine ??
-          getMaxCharsPerLine(
+          helpers.getMaxCharsPerLine(
             paperSize: paperSize,
             font: font,
           );
+      bytes.addAll(
+        font == PosFontType.fontB ? cFontB.codeUnits : cFontA.codeUnits,
+      );
       _styles = _styles.copyWith(fontType: font);
     }
+    return bytes;
   }
 
   @override
-  Result getStyles(PosStyles styles, {bool isKanji = false}) {
+  List<int> setGlobalStyles(PosStyles styles, {bool isKanji = false}) {
     final List<int> bytes = <int>[];
-    final PosStyles _styles = this._styles;
-
-    Result result = Result(
-      styles: _styles,
-      bytes: bytes,
-    );
-
     if (styles.align != _styles.align) {
       bytes.addAll(
         latin1.encode(
@@ -155,41 +102,114 @@ class _GeneratorImpl implements Generator {
               : (styles.align == PosAlign.center ? cAlignCenter : cAlignRight),
         ),
       );
-      result = result.copyWith(
-        styles: _styles.copyWith(align: styles.align),
-      );
+      _styles = _styles.copyWith(align: styles.align);
     }
 
     if (styles.bold != _styles.bold) {
-      bytes.addAll(
-        styles.bold ? cBoldOn.codeUnits : cBoldOff.codeUnits,
-      );
-      result = result.copyWith(
-        styles: _styles.copyWith(bold: styles.bold),
-      );
+      bytes.addAll(styles.bold ? cBoldOn.codeUnits : cBoldOff.codeUnits);
+      _styles = _styles.copyWith(bold: styles.bold);
     }
     if (styles.turn90 != _styles.turn90) {
-      bytes.addAll(
-        styles.turn90 ? cTurn90On.codeUnits : cTurn90Off.codeUnits,
-      );
-      result = result.copyWith(
-        styles: _styles.copyWith(turn90: styles.turn90),
-      );
+      bytes.addAll(styles.turn90 ? cTurn90On.codeUnits : cTurn90Off.codeUnits);
+      _styles = _styles.copyWith(turn90: styles.turn90);
     }
     if (styles.reverse != _styles.reverse) {
       bytes.addAll(
         styles.reverse ? cReverseOn.codeUnits : cReverseOff.codeUnits,
       );
-      result = result.copyWith(
-        styles: _styles.copyWith(reverse: styles.reverse),
-      );
+      _styles = _styles.copyWith(reverse: styles.reverse);
     }
     if (styles.underline != _styles.underline) {
       bytes.addAll(
         styles.underline ? cUnderline1dot.codeUnits : cUnderlineOff.codeUnits,
       );
-      result = result.copyWith(
-        styles: _styles.copyWith(underline: styles.underline),
+      _styles = _styles.copyWith(underline: styles.underline);
+    }
+
+    // Set font
+    if (styles.fontType != null && styles.fontType != _styles.fontType) {
+      bytes.addAll(
+        styles.fontType == PosFontType.fontB
+            ? cFontB.codeUnits
+            : cFontA.codeUnits,
+      );
+      _styles = _styles.copyWith(fontType: styles.fontType);
+    } else if (_font != null && _font != _styles.fontType) {
+      bytes.addAll(
+        _font == PosFontType.fontB ? cFontB.codeUnits : cFontA.codeUnits,
+      );
+      _styles = _styles.copyWith(fontType: _font);
+    }
+
+    // Characters size
+    if (styles.height.value != _styles.height.value ||
+        styles.width.value != _styles.width.value) {
+      bytes.addAll(
+        Uint8List.fromList(
+          List<int>.from(cSizeGSn.codeUnits)
+            ..add(PosTextSize.decSize(styles.height, styles.width)),
+        ),
+      );
+      _styles = _styles.copyWith(height: styles.height, width: styles.width);
+    }
+
+    // Set Kanji mode
+    if (isKanji) {
+      bytes.addAll(cKanjiOn.codeUnits);
+    } else {
+      bytes.addAll(cKanjiOff.codeUnits);
+    }
+
+    // Set local code table
+    if (styles.codeTable != null) {
+      bytes.addAll(
+        Uint8List.fromList(
+          List<int>.from(cCodeTable.codeUnits)
+            ..add(profile.getCodePageId(styles.codeTable)),
+        ),
+      );
+      _styles =
+          _styles.copyWith(align: styles.align, codeTable: styles.codeTable);
+    } else if (_codeTable != null) {
+      bytes.addAll(
+        Uint8List.fromList(
+          List<int>.from(cCodeTable.codeUnits)
+            ..add(profile.getCodePageId(_codeTable)),
+        ),
+      );
+      _styles = _styles.copyWith(align: styles.align, codeTable: _codeTable);
+    }
+
+    return bytes;
+  }
+
+  @override
+  List<int> getStyles(PosStyles styles, {bool isKanji = false}) {
+    final List<int> bytes = <int>[];
+    if (styles.align != _styles.align) {
+      bytes.addAll(
+        latin1.encode(
+          styles.align == PosAlign.left
+              ? cAlignLeft
+              : (styles.align == PosAlign.center ? cAlignCenter : cAlignRight),
+        ),
+      );
+    }
+
+    if (styles.bold != _styles.bold) {
+      bytes.addAll(styles.bold ? cBoldOn.codeUnits : cBoldOff.codeUnits);
+    }
+    if (styles.turn90 != _styles.turn90) {
+      bytes.addAll(styles.turn90 ? cTurn90On.codeUnits : cTurn90Off.codeUnits);
+    }
+    if (styles.reverse != _styles.reverse) {
+      bytes.addAll(
+        styles.reverse ? cReverseOn.codeUnits : cReverseOff.codeUnits,
+      );
+    }
+    if (styles.underline != _styles.underline) {
+      bytes.addAll(
+        styles.underline ? cUnderline1dot.codeUnits : cUnderlineOff.codeUnits,
       );
     }
 
@@ -200,15 +220,9 @@ class _GeneratorImpl implements Generator {
             ? cFontB.codeUnits
             : cFontA.codeUnits,
       );
-      result = result.copyWith(
-        styles: _styles.copyWith(fontType: styles.fontType),
-      );
     } else if (_font != null && _font != _styles.fontType) {
       bytes.addAll(
         _font == PosFontType.fontB ? cFontB.codeUnits : cFontA.codeUnits,
-      );
-      result = result.copyWith(
-        styles: _styles.copyWith(fontType: _font),
       );
     }
 
@@ -218,28 +232,16 @@ class _GeneratorImpl implements Generator {
       bytes.addAll(
         Uint8List.fromList(
           List<int>.from(cSizeGSn.codeUnits)
-            ..add(
-              PosTextSize.decSize(styles.height, styles.width),
-            ),
-        ),
-      );
-      result = result.copyWith(
-        styles: _styles.copyWith(
-          height: styles.height,
-          width: styles.width,
+            ..add(PosTextSize.decSize(styles.height, styles.width)),
         ),
       );
     }
 
     // Set Kanji mode
     if (isKanji) {
-      bytes.addAll(
-        cKanjiOn.codeUnits,
-      );
+      bytes.addAll(cKanjiOn.codeUnits);
     } else {
-      bytes.addAll(
-        cKanjiOff.codeUnits,
-      );
+      bytes.addAll(cKanjiOff.codeUnits);
     }
 
     // Set local code table
@@ -247,15 +249,7 @@ class _GeneratorImpl implements Generator {
       bytes.addAll(
         Uint8List.fromList(
           List<int>.from(cCodeTable.codeUnits)
-            ..add(
-              profile.getCodePageId(styles.codeTable),
-            ),
-        ),
-      );
-      result = result.copyWith(
-        styles: _styles.copyWith(
-          align: styles.align,
-          codeTable: styles.codeTable,
+            ..add(profile.getCodePageId(styles.codeTable)),
         ),
       );
     } else if (_codeTable != null) {
@@ -265,56 +259,9 @@ class _GeneratorImpl implements Generator {
             ..add(profile.getCodePageId(_codeTable)),
         ),
       );
-      result = result.copyWith(
-        styles: _styles.copyWith(
-          align: styles.align,
-          codeTable: _codeTable,
-        ),
-      );
     }
 
-    return result;
-  }
-
-  @override
-  void setStyles(PosStyles styles, {bool isKanji = false}) {
-    if (styles.align != _styles.align) {
-      _styles = _styles.copyWith(align: styles.align);
-    }
-
-    if (styles.bold != _styles.bold) {
-      _styles = _styles.copyWith(bold: styles.bold);
-    }
-    if (styles.turn90 != _styles.turn90) {
-      _styles = _styles.copyWith(turn90: styles.turn90);
-    }
-    if (styles.reverse != _styles.reverse) {
-      _styles = _styles.copyWith(reverse: styles.reverse);
-    }
-    if (styles.underline != _styles.underline) {
-      _styles = _styles.copyWith(underline: styles.underline);
-    }
-
-    // Set font
-    if (styles.fontType != null && styles.fontType != _styles.fontType) {
-      _styles = _styles.copyWith(fontType: styles.fontType);
-    } else if (_font != null && _font != _styles.fontType) {
-      _styles = _styles.copyWith(fontType: _font);
-    }
-
-    // Characters size
-    if (styles.height.value != _styles.height.value ||
-        styles.width.value != _styles.width.value) {
-      _styles = _styles.copyWith(height: styles.height, width: styles.width);
-    }
-
-    // Set local code table
-    if (styles.codeTable != null) {
-      _styles =
-          _styles.copyWith(align: styles.align, codeTable: styles.codeTable);
-    } else if (_codeTable != null) {
-      _styles = _styles.copyWith(align: styles.align, codeTable: _codeTable);
-    }
+    return bytes;
   }
 
   /// Print selected code table.

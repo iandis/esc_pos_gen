@@ -11,31 +11,11 @@ import 'dart:typed_data' show Uint8List;
 
 import 'capability_profile.dart';
 import 'commands.dart';
-import 'declarative/helpers.dart';
+import 'declarative/helpers.dart' as helpers;
 import 'enums.dart';
 import 'pos_styles.dart';
 
 part 'generator_impl.dart';
-
-class Result {
-  const Result({
-    required this.styles,
-    required this.bytes,
-  });
-
-  final PosStyles styles;
-  final List<int> bytes;
-
-  Result copyWith({
-    PosStyles? styles,
-    List<int>? bytes,
-  }) {
-    return Result(
-      styles: styles ?? this.styles,
-      bytes: bytes ?? this.bytes,
-    );
-  }
-}
 
 abstract class Generator {
   /// Creates a [Generator]
@@ -67,37 +47,26 @@ abstract class Generator {
   PosStyles get styles;
 
   /// Clear the buffer and reset text styles
-  List<int> getInitialStyles();
-
-  void reset();
+  List<int> reset();
 
   /// Set global code table which will be used
   /// instead of the default printer's code table
   /// (even after resetting)
-  Result getGlobalCodeTable(String? codeTable);
-
-  /// Set global code table which will be used
-  /// instead of the default printer's code table
-  /// (even after resetting)
-  void setGlobalCodeTable(String? codeTable);
+  List<int> setGlobalCodeTable(String? codeTable);
 
   /// Set global font which will be used instead of the default printer's font
   /// (even after resetting)
-  Result getGlobalFont(
+  List<int> setGlobalFont(
     PosFontType? font, {
     int? maxCharsPerLine,
   });
 
-  /// Set global font which will be used instead of the default printer's font
-  /// (even after resetting)
-  void setGlobalFont(
-    PosFontType? font, {
-    int? maxCharsPerLine,
+  List<int> setGlobalStyles(
+    PosStyles styles, {
+    bool isKanji = false,
   });
 
-  Result getStyles(PosStyles styles, {bool isKanji = false});
-
-  void setStyles(
+  List<int> getStyles(
     PosStyles styles, {
     bool isKanji = false,
   });

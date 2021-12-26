@@ -3,7 +3,7 @@ part of 'pos_text.dart';
 class _PosText implements PosText {
   const _PosText(
     this.data, {
-    this.styles = const PosStyles(),
+    this.styles = const PosStyles.defaults(),
     this.linesAfter = 0,
     this.containsChinese = false,
     this.maxCharsPerLine,
@@ -11,7 +11,7 @@ class _PosText implements PosText {
 
   const _PosText.bold(
     this.data, {
-    this.styles = const PosStyles(bold: true),
+    this.styles = const PosStyles.defaults(bold: true),
     this.linesAfter = 0,
     this.containsChinese = false,
     this.maxCharsPerLine,
@@ -19,7 +19,7 @@ class _PosText implements PosText {
 
   const _PosText.center(
     this.data, {
-    this.styles = const PosStyles(align: PosAlign.center),
+    this.styles = const PosStyles.defaults(align: PosAlign.center),
     this.linesAfter = 0,
     this.containsChinese = false,
     this.maxCharsPerLine,
@@ -27,7 +27,7 @@ class _PosText implements PosText {
 
   const _PosText.right(
     this.data, {
-    this.styles = const PosStyles(align: PosAlign.right),
+    this.styles = const PosStyles.defaults(align: PosAlign.right),
     this.linesAfter = 0,
     this.containsChinese = false,
     this.maxCharsPerLine,

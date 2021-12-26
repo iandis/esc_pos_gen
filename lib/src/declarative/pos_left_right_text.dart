@@ -7,10 +7,10 @@ abstract class PosLeftRightText implements PosRow {
   /// This is basically a [PosRow] having 2 [PosColumn]s for
   /// the texts
   ///
-  /// * [leftTextStyles] defaults to `const PosStyles()`
+  /// * [leftTextStyles] defaults to `PosStyles.defaults`
   /// * [leftTextWidth] defaults to 6
   /// * [leftTextContainsChinese] defaults to `false`
-  /// * [rightTextStyles] defaults to have [PosAlign.right]
+  /// * [rightTextStyles] defaults to `PosStyles.defaults` with [PosAlign.right]
   /// * [rightTextWidth] defaults to 6
   /// * [rightTextContainsChinese] defaults to `false`
   ///
@@ -34,12 +34,12 @@ class _PosLeftRightText extends _PosRow implements PosLeftRightText {
   _PosLeftRightText({
     required String leftText,
     Uint8List? leftTextEncoded,
-    PosStyles leftTextStyles = const PosStyles(),
+    PosStyles leftTextStyles = const PosStyles.defaults(),
     bool leftTextContainsChinese = false,
     int leftTextWidth = 6,
     required String rightText,
     Uint8List? rightTextEncoded,
-    PosStyles rightTextStyles = const PosStyles(align: PosAlign.right),
+    PosStyles rightTextStyles = const PosStyles.defaults(align: PosAlign.right),
     bool rightTextContainsChinese = false,
     int rightTextWidth = 6,
   })  : assert(

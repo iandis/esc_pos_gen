@@ -15,13 +15,11 @@ class _PosImage implements PosImage {
 
     // Image alignment
     bytes.addAll(
-      generator
-          .getStyles(
-            const PosStyles().copyWith(
-              align: align,
-            ),
-          )
-          .bytes,
+      generator.getStyles(
+        const PosStyles().copyWith(
+          align: align,
+        ),
+      ),
     );
 
     // make a copy

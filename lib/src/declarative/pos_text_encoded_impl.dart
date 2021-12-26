@@ -3,7 +3,7 @@ part of 'pos_text.dart';
 class _PosTextEncoded implements PosText {
   const _PosTextEncoded(
     this.textBytes, {
-    this.styles = const PosStyles(),
+    this.styles = const PosStyles.defaults(),
     this.linesAfter = 0,
     this.maxCharsPerLine,
   });

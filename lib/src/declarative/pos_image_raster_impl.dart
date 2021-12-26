@@ -19,13 +19,11 @@ class _PosImageRaster extends _PosImage {
 
     // Image alignment
     bytes.addAll(
-      generator
-          .getStyles(
-            const PosStyles().copyWith(
-              align: align,
-            ),
-          )
-          .bytes,
+      generator.getStyles(
+        const PosStyles().copyWith(
+          align: align,
+        ),
+      ),
     );
 
     final int widthPx = image.width;

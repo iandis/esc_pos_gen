@@ -4,10 +4,9 @@ import 'dart:typed_data';
 import 'package:hex/hex.dart';
 import 'package:image/image.dart';
 
-import '../../gbk_codec/gbk_codec.dart';
 import '../commands.dart';
 import '../enums.dart';
-import '../generator.dart';
+import '../gbk_codec/gbk_codec.dart';
 import '../pos_styles.dart';
 
 int getMaxCharsPerLine({
@@ -87,7 +86,7 @@ Uint8List encode(String value, {bool isKanji = false}) {
   if (!isKanji) {
     return latin1.encode(text);
   } else {
-    return Uint8List.fromList(gbk_bytes.encode(text));
+    return Uint8List.fromList(gbkBytes.encode(text));
   }
 }
 
@@ -246,7 +245,7 @@ List<int> generateText(
   bool isKanji = false,
   int colWidth = 12,
   int? maxCharsPerLine,
-  required Result Function(PosStyles styles, {bool isKanji}) getStylesFn,
+  required List<int> Function(PosStyles styles, {bool isKanji}) getStylesFn,
   required int? defaultMaxCharsPerLine,
   required PosFontType? defaultFontType,
 }) {
@@ -302,7 +301,7 @@ List<int> generateText(
   }
 
   bytes.addAll(
-    getStylesFn(styles, isKanji: isKanji).bytes,
+    getStylesFn(styles, isKanji: isKanji),
   );
 
   return bytes..addAll(textBytes);
@@ -316,7 +315,7 @@ List<int> generateMixedKanji(
   int? maxCharsPerLine,
   required int spaceBetweenRows,
   required PaperSize paperSize,
-  required Result Function(PosStyles styles, {bool isKanji}) getStylesFn,
+  required List<int> Function(PosStyles styles, {bool isKanji}) getStylesFn,
   required PosFontType? defaultFontType,
   required int? defaultMaxCharsPerLine,
 }) {
