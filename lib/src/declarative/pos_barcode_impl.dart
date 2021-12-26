@@ -22,7 +22,7 @@ class _PosBarcode implements PosBarcode {
     final List<int> bytes = <int>[];
     // Set alignment
     bytes.addAll(
-      generator.getStyles(const PosStyles().copyWith(align: align)).bytes,
+      generator.getStyles(const PosStyles().copyWith(align: align)),
     );
 
     // Set text position

@@ -19,11 +19,9 @@ class _PosQRCode implements PosQRCode {
 
     // Set alignment
     bytes.addAll(
-      generator
-          .getStyles(
-            const PosStyles().copyWith(align: align),
-          )
-          .bytes,
+      generator.getStyles(
+        const PosStyles().copyWith(align: align),
+      ),
     );
     final QRCode qr = QRCode(text, size, correctionLevel);
     return bytes..addAll(qr.bytes);

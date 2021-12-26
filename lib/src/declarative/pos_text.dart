@@ -12,7 +12,7 @@ part 'pos_text_encoded_impl.dart';
 abstract class PosText implements PosComponent {
   /// Creates ESC/POS commands for printing text
   ///
-  /// * [styles] defaults to have [PosAlign.left]
+  /// * [styles] defaults to `PosStyles.defaults` with [PosAlign.left]
   ///
   /// * [linesAfter] defaults to 0
   const factory PosText(

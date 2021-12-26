@@ -194,7 +194,7 @@ final profiles = await CapabilityProfile.getAvailableProfiles();
 
 ## How to Help
 
-- Add a CapabilityProfile to support your printer's model. A new profile should be added to `resources/capabilities.json` file
+- Add a CapabilityProfile to support your printer's model. A new profile should be added to `lib/resources/capabilities.json` file
 - Test your printer and add it in the table: [Wifi/Network printer](https://github.com/andrey-ushakov/esc_pos_printer/blob/master/printers.md) or [Bluetooth printer](https://github.com/andrey-ushakov/esc_pos_bluetooth/blob/master/printers.md)
 - Test and report bugs
 - Share your ideas about what could be improved (code optimization, new features...)

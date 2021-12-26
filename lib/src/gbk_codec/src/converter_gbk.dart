@@ -2,32 +2,32 @@ import 'dart:convert';
 
 import 'gbk_maps.dart';
 
-gbkCodec gbk = gbkCodec();
+GBKCodec gbk = GBKCodec();
 
-Map<int, String> _gbkCode_to_char = {};
-Map<String, int> _char_to_gbkCode = {};
+Map<int, String> _gbkCodeToChar = <int, String>{};
+Map<String, int> _charToGbkCode = <String, int>{};
 
-class gbkCodec extends Encoding {
+class GBKCodec extends Encoding {
   @override
-  Converter<List<int>, String> get decoder => const gbkDecoder();
+  Converter<List<int>, String> get decoder => const GBKDecoder();
 
   @override
-  Converter<String, List<int>> get encoder => const gbkEncoder();
+  Converter<String, List<int>> get encoder => const GBKEncoder();
 
   @override
   String get name => 'gbk';
 
-  gbkCodec() {
+  GBKCodec() {
     //initialize gbk code maps
-    _char_to_gbkCode = json_char_to_gbk;
-    json_gbk_to_char.forEach((sInt, sChar) {
-      _gbkCode_to_char[int.parse(sInt, radix: 16)] = sChar;
+    _charToGbkCode = json_char_to_gbk;
+    json_gbk_to_char.forEach((String sInt, String sChar) {
+      _gbkCodeToChar[int.parse(sInt, radix: 16)] = sChar;
     });
   }
 }
 
-class gbkEncoder extends Converter<String, List<int>> {
-  const gbkEncoder();
+class GBKEncoder extends Converter<String, List<int>> {
+  const GBKEncoder();
 
   @override
   List<int> convert(String input) {
@@ -36,21 +36,21 @@ class gbkEncoder extends Converter<String, List<int>> {
 }
 
 List<int> gbkEncode(String input) {
-  var ret = <int>[];
-  input.codeUnits.forEach((charCode) {
-    var char = String.fromCharCode(charCode);
-    var gbkCode = _char_to_gbkCode[char];
+  final List<int> ret = <int>[];
+  for (final int charCode in input.codeUnits) {
+    final String char = String.fromCharCode(charCode);
+    final int? gbkCode = _charToGbkCode[char];
     if (gbkCode != null) {
       ret.add(gbkCode);
-    } else if (charCode != null) {
+    } else {
       ret.add(charCode);
     }
-  });
+  }
   return ret;
 }
 
-class gbkDecoder extends Converter<List<int>, String> {
-  const gbkDecoder();
+class GBKDecoder extends Converter<List<int>, String> {
+  const GBKDecoder();
 
   @override
   String convert(List<int> input) {
@@ -59,7 +59,7 @@ class gbkDecoder extends Converter<List<int>, String> {
 }
 
 String gbkDecode(List<int> input) {
-  var ret = '';
+  String ret = '';
   /*
   List<int> combined =  List<int>();
   int id= 0;
@@ -75,14 +75,14 @@ String gbkDecode(List<int> input) {
       }
   }
   */
-  input.forEach((charCode) {
-    var char = _gbkCode_to_char[charCode];
+  for (final int charCode in input) {
+    final String? char = _gbkCodeToChar[charCode];
     if (char != null) {
       ret += char;
     } else {
       ret += String.fromCharCode(charCode);
     }
     //print(ret);
-  });
+  }
   return ret;
 }

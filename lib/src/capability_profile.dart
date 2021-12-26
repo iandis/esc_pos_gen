@@ -1,17 +1,10 @@
-/*
- * esc_pos_utils
- * Created by Andrey U.
- * 
- * Copyright (c) 2019-2020. All rights reserved.
- * See LICENSE for distribution and usage details.
- */
+// ignore_for_file: avoid_dynamic_calls
 
 import 'dart:convert' show json;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-final List<Map<String, dynamic>> printProfiles = <Map<String, dynamic>>[];
-final Map<String, dynamic> printCapabilities = <String, dynamic>{};
+List<Map<String, dynamic>> __printProfiles = <Map<String, dynamic>>[];
+Map<String, dynamic> __printCapabilities = <String, dynamic>{};
 
 class CodePage {
   CodePage(this.id, this.name);
@@ -20,48 +13,48 @@ class CodePage {
 }
 
 class CapabilityProfile {
-  CapabilityProfile._internal(this.name, this.codePages);
+  CapabilityProfile._internal(
+    this.name,
+    this.codePages,
+  );
+
+  final String name;
+  final List<CodePage> codePages;
 
   /// [ensureProfileLoaded]
   /// this method will cache the profile json into data which will
   /// speed up the next loop and searching profile
   static Future<void> ensureProfileLoaded({String? path}) async {
     /// check where this global capabilities is empty
-    /// then load capabilities.json
+    /// then load capabilities.json,
     /// else do nothing
-    if (printCapabilities.isEmpty) {
+    if (__printCapabilities.isEmpty == true) {
       final String content = await rootBundle.loadString(
-        path ?? 'resources/capabilities.json',
+        path ?? 'packages/esc_pos_gen/resources/capabilities.json',
       );
-      final Map<String, dynamic> _capabilities =
-          json.decode(content) as Map<String, dynamic>;
-      printCapabilities.addAll(_capabilities);
-
-      final Map<String, dynamic>? profiles =
-          _capabilities['profiles'] as Map<String, dynamic>?;
-
-      profiles?.forEach(
-        (String k, dynamic v) {
-          printProfiles.add(
-            <String, dynamic>{
-              'key': k,
-              'vendor': v is Map && v['vendor'] is String ? v['vendor'] : '',
-              'name': v is Map && v['name'] is String ? v['name'] : '',
-              'description': v is Map && v['description'] is String
-                  ? v['description']
-                  : '',
-            },
-          );
-        },
+      final dynamic _capabilities = json.decode(content);
+      __printCapabilities = Map<String, dynamic>.from(
+        _capabilities as Map<dynamic, dynamic>,
       );
+
+      _capabilities['profiles'].forEach((dynamic k, dynamic v) {
+        __printProfiles.add(<String, dynamic>{
+          'key': k,
+          'vendor': v['vendor'] is String ? v['vendor'] : '',
+          'name': v['name'] is String ? v['name'] : '',
+          'description': v['description'] is String ? v['description'] : '',
+        });
+      });
 
       /// assert that the capabilities will be not empty
-      assert(printCapabilities.isNotEmpty);
+      assert(__printCapabilities.isNotEmpty);
     } else {
-      if (kDebugMode || kProfileMode) {
+      assert(() {
         // ignore: avoid_print
-        print('Capabilities is already loaded');
-      }
+        print('capabilities.length is already loaded');
+        return true;
+        // ignore: require_trailing_commas
+      }());
     }
   }
 
@@ -70,63 +63,48 @@ class CapabilityProfile {
     ///
     await ensureProfileLoaded();
 
-    final Map<String, dynamic>? profiles =
-        printCapabilities['profiles'] as Map<String, dynamic>?;
-
-    final Map<String, dynamic>? profile =
-        profiles?[name] as Map<String, dynamic>?;
+    final dynamic profile = __printCapabilities['profiles'][name];
 
     if (profile == null) {
       throw Exception("The CapabilityProfile '$name' does not exist");
     }
 
     final List<CodePage> list = <CodePage>[];
-    (profile['codePages'] as Map<String, dynamic>?)?.forEach(
-      (String k, dynamic v) {
-        list.add(CodePage(int.parse(k), v as String));
-      },
-    );
+    profile['codePages'].forEach((dynamic k, dynamic v) {
+      list.add(CodePage(int.parse(k as String), v as String));
+    });
 
     // Call the private constructor
     return CapabilityProfile._internal(name, list);
   }
 
-  final String name;
-  final List<CodePage> codePages;
-
   int getCodePageId(String? codePage) {
-    return codePages
-        .firstWhere(
-          (CodePage cp) => cp.name == codePage,
-          orElse: () => throw Exception(
-            "Code Page '$codePage' isn't defined for this profile",
-          ),
-        )
-        .id;
+    return codePages.firstWhere(
+      (CodePage cp) => cp.name == codePage,
+      orElse: () {
+        throw Exception(
+          "Code Page '$codePage' isn't defined for this profile",
+        );
+      },
+    ).id;
   }
 
   static Future<List<dynamic>> getAvailableProfiles() async {
     /// ensure the capabilities is not empty
     await ensureProfileLoaded();
 
-    final Map<String, dynamic> _profiles =
-        printCapabilities['profiles'] as Map<String, dynamic>;
+    final dynamic _profiles = __printCapabilities['profiles'];
 
     final List<dynamic> res = <dynamic>[];
 
-    _profiles.forEach(
-      (String k, dynamic v) {
-        res.add(
-          <String, dynamic>{
-            'key': k,
-            'vendor': v is Map && v['vendor'] is String ? v['vendor'] : '',
-            'name': v is Map && v['name'] is String ? v['name'] : '',
-            'description':
-                v is Map && v['description'] is String ? v['description'] : '',
-          },
-        );
-      },
-    );
+    _profiles.forEach((dynamic k, dynamic v) {
+      res.add(<String, dynamic>{
+        'key': k,
+        'vendor': v['vendor'] is String ? v['vendor'] : '',
+        'name': v['name'] is String ? v['name'] : '',
+        'description': v['description'] is String ? v['description'] : '',
+      });
+    });
 
     return res;
   }

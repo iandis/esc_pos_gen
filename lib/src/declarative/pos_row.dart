@@ -25,7 +25,7 @@ abstract class PosRow implements PosComponent {
   /// This is basically a [PosRow] having 2 [PosColumn]s for
   /// the texts
   ///
-  /// * [leftTextStyles] defaults to `const PosStyles()`
+  /// * [leftTextStyles] defaults to `const PosStyles.defaults()`
   /// * [leftTextWidth] defaults to 6
   /// * [leftTextContainsChinese] defaults to `false`
   /// * [rightTextStyles] defaults to have [PosAlign.right]
