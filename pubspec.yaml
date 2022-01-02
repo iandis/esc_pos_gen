@@ -1,6 +1,6 @@
 name: esc_pos_gen
 description: Declarative-style ESC/POS commands that can be sent to a thermal printer.
-version: 3.1.0
+version: 3.2.0
 homepage: https://github.com/iandis/esc_pos_gen
 issue_tracker: https://github.com/iandis/esc_pos_gen/issues
 

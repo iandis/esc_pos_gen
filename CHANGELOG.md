@@ -1,3 +1,8 @@
+## 3.2.0
+
+- **(BREAKING CHANGE)** renamed `PosListComponent` to `PosList`
+- add new `PosDelegate`
+
 ## 3.1.0
 
 - add new `PosListComponent`
