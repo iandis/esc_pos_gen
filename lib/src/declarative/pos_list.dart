@@ -1,19 +1,19 @@
 import '../generator.dart';
 import 'pos_component.dart';
 
-abstract class PosListComponent implements PosComponent {
-  const factory PosListComponent(
+abstract class PosList implements PosComponent {
+  const factory PosList(
     List<PosComponent> components,
-  ) = _PosListComponent;
+  ) = _PosList;
 
-  const factory PosListComponent.builder({
+  const factory PosList.builder({
     required int count,
     required PosComponent Function(int index) builder,
-  }) = _PosListComponentBuilder;
+  }) = _PosListBuilder;
 }
 
-class _PosListComponent implements PosListComponent {
-  const _PosListComponent(this.components);
+class _PosList implements PosList {
+  const _PosList(this.components);
   final List<PosComponent> components;
 
   @override
@@ -26,8 +26,8 @@ class _PosListComponent implements PosListComponent {
   }
 }
 
-class _PosListComponentBuilder implements PosListComponent {
-  const _PosListComponentBuilder({
+class _PosListBuilder implements PosList {
+  const _PosListBuilder({
     required this.count,
     required this.builder,
   });
