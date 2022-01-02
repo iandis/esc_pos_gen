@@ -1,9 +1,11 @@
 import 'dart:typed_data';
+
 import '../capability_profile.dart';
 import '../commands.dart';
 import '../enums.dart';
 import '../generator.dart';
 import '../pos_styles.dart';
+import 'pos_delegate.dart';
 
 /// The base class for generating ESC/POS commands
 /// for creating components such as text, image, barcode, etc
@@ -16,6 +18,11 @@ abstract class PosComponent {
     List<int> bytes, {
     bool isKanji,
   }) = _RawBytesComponent;
+
+  /// Creates ESC/POS commands from [PosComponent]s
+  const factory PosComponent.delegate(
+    PosDelegate delegate,
+  ) = _DelegateComponent;
 
   /// Generates ESC/POS commands based on [generator]'s
   /// [CapabilityProfile], [PaperSize], [PosStyles], etc.
@@ -38,5 +45,17 @@ class _RawBytesComponent implements PosComponent {
       bytes.addAll(cKanjiOff.codeUnits);
     }
     return bytes..addAll(Uint8List.fromList(bytes));
+  }
+}
+
+class _DelegateComponent implements PosComponent {
+  const _DelegateComponent(this.delegate);
+
+  final PosDelegate delegate;
+
+  @override
+  List<int> generate(Generator generator) {
+    final PosComponent component = delegate.build(generator);
+    return component.generate(generator);
   }
 }
