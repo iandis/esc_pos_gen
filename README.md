@@ -41,10 +41,10 @@ List<int> generatePaper() {
   final List<PosComponent> components = <PosComponent>[
     const PosText.center('My Store'),
     const PosSeparator(),
-    PosListComponent.builder(
+    PosList.builder(
       count: 20,
       builder: (int i) {
-        return PosListComponent(
+        return PosList(
           <PosComponent>[
             PosRow.leftRightText(
               leftText: 'Product $i',
@@ -67,6 +67,65 @@ List<int> generatePaper() {
     ),
     const PosSeparator(),
     PosBarcode.code128('{A12345'.split('')),
+    const PosSeparator(),
+    const PosFeed(1),
+    const PosCut(),
+  ];
+
+  final Paper paper = Paper(
+    generator: generator,
+    components: components,
+  );
+
+  return paper.bytes;
+}
+```
+
+### Simple paper with a component delegate:
+
+```dart
+class StoreSocialMediaLinks extends PosDelegate {
+  const StoreSocialMediaLinks();
+
+  PosComponent build(Generator generator) {
+    return PosList(<PosComponent>[
+      PosRow.leftRightText(
+        leftText: 'Instagram',
+        leftTextStyles: const PosStyles.defaults(
+          fontType: PosFontType.fontB,
+        ),
+        rightText: '@iandi.s',
+        rightTextStyles: const PosStyles.defaults(
+          align: PosAlign.right,
+          fontType: PosFontType.fontB,
+        ),
+      ),
+      PosRow.leftRightText(
+        leftText: 'Github',
+        leftTextStyles: const PosStyles.defaults(
+          fontType: PosFontType.fontB,
+        ),
+        rightText: 'github.com/iandis',
+        rightTextStyles: const PosStyles.defaults(
+          align: PosAlign.right,
+          fontType: PosFontType.fontB,
+        ),
+      ),
+    ]);
+  }
+}
+
+List<int> generatePaper() {
+  final CapabilityProfile profile = await CapabilityProfile.load();
+  final Generator generator = Generator(
+    PaperSize.mm58,
+    profile,
+  );
+
+  final List<PosComponent> components = <PosComponent>[
+    const PosText.center('My Social Media Links'),
+    const PosSeparator(),
+    const PosComponent.delegate(StoreSocialMediaLinks()),
     const PosSeparator(),
     const PosFeed(1),
     const PosCut(),
