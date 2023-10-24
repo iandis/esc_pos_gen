@@ -26,8 +26,8 @@ class _PosImage implements PosImage {
     final Image image = Image.from(this.image);
 
     invert(image);
-    flip(image, Flip.horizontal);
-    final Image imageRotated = copyRotate(image, 270);
+    flip(image, direction: FlipDirection.horizontal);
+    final Image imageRotated = copyRotate(image, angle: 270);
 
     const int lineHeight = 3; // highDensityVertical ? 3 : 1;
     final List<List<int>> blobs = helpers.toColumnFormat(
