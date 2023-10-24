@@ -35,8 +35,7 @@ double getCharWidth(
     defaultMaxCharsPerLine: defaultMaxCharsPerLine,
     defaultFontType: defaultFontType,
   );
-  final double charWidth =
-      (paperSize.width / charsPerLine) * styles.width.value;
+  final double charWidth = (paperSize.width / charsPerLine) * styles.width.value;
   return charWidth;
 }
 
@@ -158,16 +157,16 @@ List<List<int>> toColumnFormat(Image imgSrc, int lineHeight) {
 
   // Create a black bottom layer
   final Image biggerImage = copyResize(image, width: widthPx, height: heightPx);
-  fill(biggerImage, 0);
+  fill(biggerImage, color: ColorRgb8(0, 0, 0));
   // Insert source image into bigger one
-  drawImage(biggerImage, image, dstX: 0, dstY: 0);
+  //drawImage(biggerImage, image, dstX: 0, dstY: 0);
 
   int left = 0;
   final List<List<int>> blobs = <List<int>>[];
 
   while (left < widthPx) {
-    final Image slice = copyCrop(biggerImage, left, 0, lineHeight, heightPx);
-    final Uint8List bytes = slice.getBytes(format: Format.luminance);
+    final Image slice = copyCrop(biggerImage, x: left, y: 0, width: widthPx, height: heightPx);
+    final Uint8List bytes = slice.getBytes(order: ChannelOrder.grayAlpha);
     blobs.add(bytes);
     left += lineHeight;
   }
@@ -232,8 +231,7 @@ int transformUint32Bool(
   int shift, {
   required bool shouldAddNewValue,
 }) {
-  return ((0xFFFFFFFF ^ (0x1 << shift)) & uint32) |
-      ((shouldAddNewValue ? 1 : 0) << shift);
+  return ((0xFFFFFFFF ^ (0x1 << shift)) & uint32) | ((shouldAddNewValue ? 1 : 0) << shift);
 }
 
 List<int> generateText(
